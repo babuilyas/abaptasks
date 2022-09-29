@@ -50,6 +50,13 @@ class ZTASK2_CL_CP_INBDLV_TEST implementation.
           exit.
         endif.
 
+        LO_HTTP_CLIENT->REQUEST->IF_HTTP_ENTITY~SET_HEADER_FIELDS(
+        FIELDS = value #(
+        ( NAME = 'accept' VALUE = 'application/json' )
+        ( NAME = 'accept-encoding' VALUE = '*' )
+*                ( NAME = 'content-type' VALUE = 'application/json' )
+        ) ).
+
         LO_CLIENT_PROXY = /IWBEP/CL_CP_CLIENT_PROXY_FACT=>CREATE_v2_REMOTE_PROXY(
            IO_HTTP_CLIENT = LO_HTTP_CLIENT
            IS_PROXY_MODEL_KEY = value #(
@@ -63,38 +70,33 @@ class ZTASK2_CL_CP_INBDLV_TEST implementation.
         LO_READ_REQUEST = LO_CLIENT_PROXY->CREATE_RESOURCE_FOR_ENTITY_SET( 'A_INBDELIVERYHEADER' )->CREATE_REQUEST_FOR_READ( ).
 
         data TT type /IWBEP/IF_CP_RUNTIME_TYPES=>TY_T_PROPERTY_PATH .
-        append 'DELIVERYDOCUMENTTYPE' to TT.
+*        append 'DELIVERYDOCUMENTTYPE' to TT.
         append 'SUPPLIER' to TT.
         append 'DELIVERYDOCUMENT' to TT.
-        append 'DELIVERYDATE' to TT.
-        append 'CREATEDBYUSER' to TT.
-        append  'DOCUMENTDATE' to TT.
+*        append 'DELIVERYDATE' to TT.
+*        append 'CREATEDBYUSER' to TT.
+*        append  'DOCUMENTDATE' to TT.
         LO_READ_REQUEST->SET_SELECT_PROPERTIES( IT_SELECT_PROPERTY =  TT ).
 
 *        LO_READ_REQUEST->SET_TOP( 5 ) .
 
-" filter 1
-        data LT_RANGE type range of string.
+        " filter 1
+        data LT_RANGE type range of STRING.
         LT_RANGE = value #( ( OPTION = 'EQ' SIGN = 'I' LOW = '2000000001' ) ).
         data(IO_FILTER) = LO_READ_REQUEST->CREATE_FILTER_FACTORY(  )->CREATE_BY_RANGE(
         IV_PROPERTY_PATH = 'SUPPLIER'
         IT_RANGE = LT_RANGE ).
         LO_READ_REQUEST->SET_FILTER( IO_FILTER ).
 
-" filter 2
-*        DATA LT_RANGE2 TYPE range of D.
-*        lt_range2 = value #( ( option = 'GE' SIGN = 'I' LOW = '20220801' ) ).
-*        data(IO_FILTER2) = LO_READ_REQUEST->CREATE_FILTER_FACTORY(  )->CREATE_BY_RANGE(
-*        IV_PROPERTY_PATH = 'CREATIONDATE'
-*        IT_RANGE = LT_RANGE2 ).
+        " filter 2
+        data LT_RANGE2 type range of D.
+        LT_RANGE2 = value #( ( OPTION = 'GE' SIGN = 'I' LOW = '20210801' ) ).
+        data(IO_FILTER2) = LO_READ_REQUEST->CREATE_FILTER_FACTORY(  )->CREATE_BY_RANGE(
+        IV_PROPERTY_PATH = 'CREATIONDATE'
+        IT_RANGE = LT_RANGE2 ).
 *        LO_READ_REQUEST->SET_FILTER( IO_FILTER2 ).
 
-        LO_HTTP_CLIENT->REQUEST->IF_HTTP_ENTITY~SET_HEADER_FIELDS(
-        FIELDS = value #(
-        ( NAME = 'accept' VALUE = 'application/json' )
-        ( NAME = 'accept-encoding' VALUE = '*' )
-*        ( NAME = 'content-type' VALUE = 'application/json' )
-        ) ).
+
 
 *         LO_READ_REQUEST->REQUEST_COUNT( ) .
 
